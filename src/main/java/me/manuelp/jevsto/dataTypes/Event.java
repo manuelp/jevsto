@@ -1,5 +1,6 @@
 package me.manuelp.jevsto.dataTypes;
 
+import fj.F;
 import me.manuelp.jevsto.NotNull;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,19 @@ public class Event {
     this.timestamp = timestamp;
     this.type = type;
     this.data = data;
+  }
+
+  public static Event event(LocalDateTime timestamp, EventType type, EventData data) {
+    return new Event(UUID.randomUUID(), timestamp, type, data);
+  }
+
+  public static F<Event, Boolean> hasBeenCreatedAtOrAfter(final LocalDateTime t) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return e.getTimestamp().isEqual(t) || e.getTimestamp().isAfter(t);
+      }
+    };
   }
 
   public UUID getId() {
