@@ -1,7 +1,7 @@
 package me.manuelp.jevsto;
 
-import fj.function.Effect1;
 import me.manuelp.jevsto.dataTypes.Event;
+import rx.Observer;
 
-public interface Projection extends Effect1<Event> {
+public interface Projection extends Observer<Event> {
 }

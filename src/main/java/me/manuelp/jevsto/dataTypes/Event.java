@@ -33,6 +33,15 @@ public class Event {
     };
   }
 
+  public static F<Event, Boolean> hasId(final UUID id) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event event) {
+        return id.equals(event.getId());
+      }
+    };
+  }
+
   public UUID getId() {
     return id;
   }

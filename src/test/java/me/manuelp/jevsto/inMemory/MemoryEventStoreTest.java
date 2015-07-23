@@ -1,13 +1,10 @@
 package me.manuelp.jevsto.inMemory;
 
 import fj.data.List;
-import me.manuelp.jevsto.EventDataReader;
-import me.manuelp.jevsto.EventDataWriter;
 import me.manuelp.jevsto.EventStore;
-import me.manuelp.jevsto.Projection;
 import me.manuelp.jevsto.dataTypes.Event;
-import me.manuelp.jevsto.dataTypes.EventData;
 import org.junit.Test;
+import rx.observers.TestObserver;
 
 import java.time.LocalDateTime;
 
@@ -22,19 +19,19 @@ public class MemoryEventStoreTest {
   @Test
   public void notifies_all_projections_of_new_events() {
     EventStore es = new MemoryEventStore();
-    Projection p1 = new FakeProjection();
-    Projection p2 = new FakeProjection();
-    Projection p3 = new FakeProjection();
-    es.subscribe(p1);
-    es.subscribe(p2);
-    es.subscribe(p3);
+    TestObserver<Event> projection1 = new TestObserver<>();
+    TestObserver<Event> projection2 = new TestObserver<>();
+    TestObserver<Event> projection3 = new TestObserver<>();
+    es.getEvents().subscribe(projection1);
+    es.getEvents().subscribe(projection2);
+    es.getEvents().subscribe(projection3);
     Event e = event(LocalDateTime.now(), testEvent(), eventData(new byte[]{}));
 
     es.append(e);
 
-    assertTrue(((FakeProjection) p1).hasReceived(e));
-    assertTrue(((FakeProjection) p2).hasReceived(e));
-    assertTrue(((FakeProjection) p3).hasReceived(e));
+    projection1.assertReceivedOnNext(List.list(e).toJavaList());
+    projection2.assertReceivedOnNext(List.list(e).toJavaList());
+    projection3.assertReceivedOnNext(List.list(e).toJavaList());
   }
 
   @Test

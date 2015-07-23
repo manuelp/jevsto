@@ -1,50 +1,51 @@
 package me.manuelp.jevsto.inMemory;
 
 import fj.data.List;
-import fj.function.Effect1;
+import fj.data.Option;
 import me.manuelp.jevsto.EventStore;
-import me.manuelp.jevsto.Projection;
 import me.manuelp.jevsto.dataTypes.Event;
+import rx.Observable;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+import rx.subjects.SerializedSubject;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class MemoryEventStore implements EventStore {
-  private final ConcurrentLinkedQueue<Event> queue;
-  private List<Projection> projectors;
+  private final ArrayList<Event> queue;
+  private final SerializedSubject<Event, Event> stream;
 
   public MemoryEventStore() {
-    queue = new ConcurrentLinkedQueue<>();
-    projectors = List.list();
+    queue = new ArrayList<>();
+    stream = new SerializedSubject<>(PublishSubject.<Event>create());
   }
 
   @Override
-  public void append(final Event e) {
+  public synchronized void append(final Event e) {
     queue.add(e);
-    projectors.foreachDoEffect(applyProjector(e));
-  }
-
-  private Effect1<Projection> applyProjector(final Event e) {
-    return new Effect1<Projection>() {
-      @Override
-      public void f(Projection projection) {
-        projection.f(e);
-      }
-    };
+    stream.onNext(e);
   }
 
   @Override
-  public List<Event> getAll() {
+  public Observable<Event> getEvents() {
+    return stream.subscribeOn(Schedulers.io());
+  }
+
+  @Override
+  public synchronized List<Event> getAll() {
     return List.iterableList(queue);
   }
 
   @Override
-  public List<Event> getFrom(final LocalDateTime t) {
+  public synchronized List<Event> getFrom(final LocalDateTime t) {
     return getAll().filter(Event.hasBeenCreatedAtOrAfter(t));
   }
 
   @Override
-  public void subscribe(Projection p) {
-    projectors = projectors.cons(p);
+  public synchronized Option<Event> getById(final UUID id) {
+    return getAll().find(Event.hasId(id));
   }
+
 }
