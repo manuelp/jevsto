@@ -3,9 +3,9 @@ package me.manuelp.jevsto;
 import fj.data.List;
 import fj.data.Option;
 import me.manuelp.jevsto.dataTypes.Event;
+import org.threeten.bp.LocalDateTime;
 import rx.Observable;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface EventStore {

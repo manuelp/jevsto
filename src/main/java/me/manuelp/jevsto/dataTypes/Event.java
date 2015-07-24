@@ -2,8 +2,8 @@ package me.manuelp.jevsto.dataTypes;
 
 import fj.F;
 import me.manuelp.jevsto.NotNull;
+import org.threeten.bp.LocalDateTime;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Event {

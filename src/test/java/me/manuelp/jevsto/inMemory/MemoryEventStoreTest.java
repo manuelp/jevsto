@@ -4,9 +4,8 @@ import fj.data.List;
 import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.junit.Test;
+import org.threeten.bp.LocalDateTime;
 import rx.observers.TestObserver;
-
-import java.time.LocalDateTime;
 
 import static me.manuelp.jevsto.dataTypes.Event.event;
 import static me.manuelp.jevsto.dataTypes.EventData.eventData;

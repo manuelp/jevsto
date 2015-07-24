@@ -4,12 +4,12 @@ import fj.data.List;
 import fj.data.Option;
 import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.Event;
+import org.threeten.bp.LocalDateTime;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public class MemoryEventStore implements EventStore {
 
   public MemoryEventStore() {
     queue = new ArrayList<>();
-    stream = new SerializedSubject<>(PublishSubject.<Event>create());
+    stream = new SerializedSubject<>(PublishSubject.<Event> create());
   }
 
   @Override
