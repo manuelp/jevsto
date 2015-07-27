@@ -30,7 +30,7 @@ public class MemoryEventStore implements EventStore {
 
   @Override
   public Observable<Event> getEvents() {
-    return stream.subscribeOn(Schedulers.io());
+    return stream;
   }
 
   @Override
