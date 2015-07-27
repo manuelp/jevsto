@@ -3,6 +3,7 @@ package me.manuelp.jevsto.dataTypes;
 import fj.F;
 import me.manuelp.jevsto.NotNull;
 import org.threeten.bp.LocalDateTime;
+import rx.functions.Func1;
 
 import java.util.UUID;
 
@@ -29,6 +30,15 @@ public class Event {
       @Override
       public Boolean f(Event e) {
         return e.getTimestamp().isEqual(t) || e.getTimestamp().isAfter(t);
+      }
+    };
+  }
+
+  public static Func1<Event, Boolean> hasBeenCreatedFrom(final LocalDateTime t) {
+    return new Func1<Event, Boolean>() {
+      @Override
+      public Boolean call(Event event) {
+        return hasBeenCreatedAtOrAfter(t).f(event);
       }
     };
   }

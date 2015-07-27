@@ -19,7 +19,7 @@ public class MemoryEventStore implements EventStore {
 
   public MemoryEventStore() {
     queue = new ArrayList<>();
-    stream = new SerializedSubject<>(PublishSubject.<Event> create());
+    stream = new SerializedSubject<>(PublishSubject.<Event>create());
   }
 
   @Override
@@ -31,6 +31,16 @@ public class MemoryEventStore implements EventStore {
   @Override
   public Observable<Event> getEvents() {
     return stream.subscribeOn(Schedulers.io());
+  }
+
+  @Override
+  public Observable<Event> getAllEvents() {
+    return Observable.from(queue).concatWith(stream);
+  }
+
+  @Override
+  public Observable<Event> getAllEventsFrom(final LocalDateTime from) {
+    return getAllEvents().filter(Event.hasBeenCreatedFrom(from));
   }
 
   @Override

@@ -13,6 +13,10 @@ public interface EventStore {
 
   Observable<Event> getEvents();
 
+  Observable<Event> getAllEvents();
+
+  Observable<Event> getAllEventsFrom(LocalDateTime from);
+
   List<Event> getAll();
 
   List<Event> getFrom(LocalDateTime t);

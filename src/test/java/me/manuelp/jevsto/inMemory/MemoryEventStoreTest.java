@@ -61,4 +61,36 @@ public class MemoryEventStoreTest {
     assertEquals(1, events.length());
     assertTrue(events.toJavaList().contains(e2));
   }
+
+  @Test
+  public void can_subscribe_to_a_stream_of_all_events() {
+    EventStore es = new MemoryEventStore();
+    Event e1 = event(LocalDateTime.now(), testEvent(), eventData(new byte[]{}));
+    Event e2 = event(LocalDateTime.now(), testEvent(), eventData(new byte[]{}));
+    Event e3 = event(LocalDateTime.now(), testEvent(), eventData(new byte[]{}));
+    es.append(e1);
+    es.append(e2);
+    TestObserver<Event> projection1 = new TestObserver<>();
+
+    es.getAllEvents().subscribe(projection1);
+    es.append(e3);
+
+    projection1.assertReceivedOnNext(List.list(e1, e2, e3).toJavaList());
+  }
+
+  @Test
+  public void can_subscribe_to_a_stream_of_all_events_from_a_certain_date() {
+    EventStore es = new MemoryEventStore();
+    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), testEvent(), eventData(new byte[]{}));
+    Event e2 = event(LocalDateTime.of(2015, 7, 27, 22, 52), testEvent(), eventData(new byte[]{}));
+    Event e3 = event(LocalDateTime.of(2015, 7, 27, 22, 52), testEvent(), eventData(new byte[]{}));
+    es.append(e1);
+    es.append(e2);
+    TestObserver<Event> projection1 = new TestObserver<>();
+
+    es.getAllEventsFrom(LocalDateTime.of(2015, 7, 27, 22, 52)).subscribe(projection1);
+    es.append(e3);
+
+    projection1.assertReceivedOnNext(List.list(e2, e3).toJavaList());
+  }
 }
