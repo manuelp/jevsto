@@ -4,12 +4,13 @@ import fj.F;
 import me.manuelp.jevsto.EventDataWriter;
 import org.threeten.bp.LocalDateTime;
 
-public class EventConstructor<V, T extends EventType> implements F<EventDataWriter<V>, F<T, F<V, Event>>> {
+public class EventConstructor<V>
+    implements F<EventDataWriter<V>, F<EventType, F<V, Event>>> {
   @Override
-  public F<T, F<V, Event>> f(final EventDataWriter<V> writer) {
-    return new F<T, F<V, Event>>() {
+  public F<EventType, F<V, Event>> f(final EventDataWriter<V> writer) {
+    return new F<EventType, F<V, Event>>() {
       @Override
-      public F<V, Event> f(final T t) {
+      public F<V, Event> f(final EventType t) {
         return new F<V, Event>() {
           @Override
           public Event f(V v) {

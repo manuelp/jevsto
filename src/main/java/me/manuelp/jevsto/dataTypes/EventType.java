@@ -1,10 +1,14 @@
 package me.manuelp.jevsto.dataTypes;
 
-public abstract class EventType {
+public class EventType {
   private final String type;
 
-  protected EventType(String type) {
+  private EventType(String type) {
     this.type = type;
+  }
+
+  public static EventType eventType(String type) {
+    return new EventType(type);
   }
 
   public String getType() {
@@ -13,8 +17,10 @@ public abstract class EventType {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     EventType eventType = (EventType) o;
 
@@ -29,8 +35,6 @@ public abstract class EventType {
 
   @Override
   public String toString() {
-    return "EventType{" +
-           "type='" + type + '\'' +
-           '}';
+    return "EventType{" + "type='" + type + '\'' + '}';
   }
 }

@@ -6,20 +6,20 @@ import me.manuelp.jevsto.dataTypes.EventData;
 import org.junit.Test;
 
 import static me.manuelp.jevsto.dataTypes.EventData.eventData;
-import static me.manuelp.jevsto.inMemory.TestEvent.testEvent;
+import static me.manuelp.jevsto.dataTypes.EventType.eventType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class EventConstructorTest {
   @Test
   public void can_build_a_constructor_for_arbitrary_types() {
-    EventConstructor<SomeValue, TestEvent> c = new EventConstructor<>();
+    EventConstructor<SomeValue> c = new EventConstructor<>();
     MockWriter writer = new MockWriter();
 
-    Event e1 = c.f(writer).f(testEvent()).f(new SomeValue("_"));
+    Event e1 = c.f(writer).f(eventType("test")).f(new SomeValue("_"));
 
     assertTrue(writer.isCalled());
-    assertEquals(testEvent(), e1.getType());
+    assertEquals(eventType("test"), e1.getType());
   }
 
   private class SomeValue {
@@ -34,7 +34,8 @@ public class EventConstructorTest {
     }
   }
 
-  private class MockWriter implements me.manuelp.jevsto.EventDataWriter<SomeValue> {
+  private class MockWriter
+      implements me.manuelp.jevsto.EventDataWriter<SomeValue> {
     private boolean called = false;
 
     @Override
