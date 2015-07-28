@@ -25,6 +25,10 @@ public class Event {
     return new Event(UUID.randomUUID(), timestamp, type, data);
   }
 
+  public static Event event(UUID id, LocalDateTime timestamp, EventType type, EventData data) {
+    return new Event(id, timestamp, type, data);
+  }
+
   public static F<Event, Boolean> hasBeenCreatedAtOrAfter(final LocalDateTime t) {
     return new F<Event, Boolean>() {
       @Override
