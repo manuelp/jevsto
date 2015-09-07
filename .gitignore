@@ -10,3 +10,6 @@ gradle-app.setting
 # IntelliJ IDEA stuff
 /.idea
 *.iml
+
+# Emacs stuff
+*.~undo-tree~
