@@ -1,10 +1,11 @@
-group 'me.manuelp'
+group 'com.github.manuelp'
 version '0.0.2-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
@@ -17,3 +18,16 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+install {
+  repositories.mavenInstaller {
+    pom.project {
+      licenses {
+        license {
+          name 'Mozilla Public License, Version 2.0'
+          url 'https://www.mozilla.org/en-US/MPL/2.0/'
+          distribution 'repo'
+        }
+      }
+    }
+  }
+}
