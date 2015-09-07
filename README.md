@@ -4,9 +4,9 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
-### 0.0.2-SNAPSHOT
+### 0.0.2
 
-* Removed publishing from build configuration.
+* Changed group name and LICENSE (to MPL 2.0)
 
 ### 0.0.1
 
