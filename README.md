@@ -4,6 +4,10 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
+### 0.0.2-SNAPSHOT
+
+* Removed publishing from build configuration.
+
 ### 0.0.1
 
 First public stable release. Basic functionality and data types.
