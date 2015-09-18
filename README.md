@@ -4,6 +4,10 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
+### 0.0.3-SNAPSHOT
+
+* Added predicate `Event#isOfType(EventType)`.
+
 ### 0.0.2
 
 * Changed group name and LICENSE (to MPL 2.0)

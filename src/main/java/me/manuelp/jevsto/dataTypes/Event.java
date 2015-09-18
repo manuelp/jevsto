@@ -72,6 +72,21 @@ public class Event {
     return data;
   }
 
+  /**
+   * Returns a predicate that checks if an {@link Event} is of a certain type.
+   *
+   * @param t {@link EventType} to check for
+   * @return Predicate on {@link Event}s
+   */
+  public static F<Event, Boolean> isOfType(final EventType t) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return e.getType().equals(t);
+      }
+    };
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
