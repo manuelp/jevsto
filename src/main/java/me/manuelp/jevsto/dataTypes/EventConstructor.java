@@ -20,4 +20,8 @@ public class EventConstructor<V>
       }
     };
   }
+
+  public static <V> EventConstructor<V> eventConstructor() {
+    return new EventConstructor<>();
+  }
 }

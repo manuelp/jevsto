@@ -7,6 +7,7 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 ### 0.0.3-SNAPSHOT
 
 * Added predicate `Event#isOfType(EventType)`.
+* Added `EventConstructor` static factory method.
 
 ### 0.0.2
 
@@ -30,5 +31,5 @@ allprojects {
 
 dependencies {
   compile 'com.github.manuelp:jevsto:0.0.1'
-1}
+}
 ```
