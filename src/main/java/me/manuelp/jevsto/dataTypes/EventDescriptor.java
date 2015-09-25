@@ -15,7 +15,8 @@ public class EventDescriptor<T> {
     this.constructor = EventConstructor.<T>create().f(writer).f(type);
   }
 
-  public <V> EventDescriptor<V> eventDescriptor(EventType type, EventDataReader<V> reader, EventDataWriter<V> writer) {
+  public static <V> EventDescriptor<V> eventDescriptor(EventType type, EventDataReader<V> reader,
+                                                       EventDataWriter<V> writer) {
     return new EventDescriptor<>(type, reader, writer);
   }
 
