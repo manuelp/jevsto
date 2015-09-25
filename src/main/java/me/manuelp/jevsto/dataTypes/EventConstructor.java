@@ -21,7 +21,7 @@ public class EventConstructor<V>
     };
   }
 
-  public static <V> EventConstructor<V> eventConstructor() {
+  public static <V> EventConstructor<V> create() {
     return new EventConstructor<>();
   }
 }

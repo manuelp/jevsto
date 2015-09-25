@@ -8,6 +8,7 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 * Added predicate `Event#isOfType(EventType)`.
 * Added `EventConstructor` static factory method.
+* Added `EventDescriptor` type to encapsulate `EventType` and reading and writing of `Event`s.
 
 ### 0.0.2
 
