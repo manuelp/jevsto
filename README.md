@@ -4,6 +4,10 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
+### 0.1.0
+
+* Changed `Event` predicates from `F<A, B>` to `Func1<A, B>` since they are generally used to filter and event stream.
+
 ### 0.0.3
 
 * Added predicate `Event#isOfType(EventType)`.
@@ -31,6 +35,6 @@ allprojects {
 }
 
 dependencies {
-  compile 'com.github.manuelp:jevsto:0.0.1'
+  compile 'com.github.manuelp:jevsto:[X.Y.Z]'
 }
 ```

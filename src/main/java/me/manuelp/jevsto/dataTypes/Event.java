@@ -1,6 +1,5 @@
 package me.manuelp.jevsto.dataTypes;
 
-import fj.F;
 import me.manuelp.jevsto.NotNull;
 import org.threeten.bp.LocalDateTime;
 import rx.functions.Func1;
@@ -29,33 +28,6 @@ public class Event {
     return new Event(id, timestamp, type, data);
   }
 
-  public static F<Event, Boolean> hasBeenCreatedAtOrAfter(final LocalDateTime t) {
-    return new F<Event, Boolean>() {
-      @Override
-      public Boolean f(Event e) {
-        return e.getTimestamp().isEqual(t) || e.getTimestamp().isAfter(t);
-      }
-    };
-  }
-
-  public static Func1<Event, Boolean> hasBeenCreatedFrom(final LocalDateTime t) {
-    return new Func1<Event, Boolean>() {
-      @Override
-      public Boolean call(Event event) {
-        return hasBeenCreatedAtOrAfter(t).f(event);
-      }
-    };
-  }
-
-  public static F<Event, Boolean> hasId(final UUID id) {
-    return new F<Event, Boolean>() {
-      @Override
-      public Boolean f(Event event) {
-        return id.equals(event.getId());
-      }
-    };
-  }
-
   public UUID getId() {
     return id;
   }
@@ -72,16 +44,43 @@ public class Event {
     return data;
   }
 
+  public static Func1<Event, Boolean> hasBeenCreatedAtOrAfter(final LocalDateTime t) {
+    return new Func1<Event, Boolean>() {
+      @Override
+      public Boolean call(Event e) {
+        return e.getTimestamp().isEqual(t) || e.getTimestamp().isAfter(t);
+      }
+    };
+  }
+
+  public static Func1<Event, Boolean> hasBeenCreatedFrom(final LocalDateTime t) {
+    return new Func1<Event, Boolean>() {
+      @Override
+      public Boolean call(Event event) {
+        return hasBeenCreatedAtOrAfter(t).call(event);
+      }
+    };
+  }
+
+  public static Func1<Event, Boolean> hasId(final UUID id) {
+    return new Func1<Event, Boolean>() {
+      @Override
+      public Boolean call(Event event) {
+        return id.equals(event.getId());
+      }
+    };
+  }
+
   /**
    * Returns a predicate that checks if an {@link Event} is of a certain type.
    *
    * @param t {@link EventType} to check for
    * @return Predicate on {@link Event}s
    */
-  public static F<Event, Boolean> isOfType(final EventType t) {
-    return new F<Event, Boolean>() {
+  public static Func1<Event, Boolean> isOfType(final EventType t) {
+    return new Func1<Event, Boolean>() {
       @Override
-      public Boolean f(Event e) {
+      public Boolean call(Event e) {
         return e.getType().equals(t);
       }
     };
