@@ -4,6 +4,10 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
+### 0.1.1
+
+* Aligned `MemoryEventStore` to the API change introduced in version 0.1.0.
+
 ### 0.1.0
 
 * Changed `Event` predicates from `F<A, B>` to `Func1<A, B>` since they are generally used to filter and event stream.

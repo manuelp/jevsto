@@ -1,5 +1,6 @@
 package me.manuelp.jevsto.inMemory;
 
+import fj.F;
 import fj.data.List;
 import fj.data.Option;
 import me.manuelp.jevsto.EventStore;
@@ -50,12 +51,22 @@ public class MemoryEventStore implements EventStore {
 
   @Override
   public synchronized List<Event> getFrom(final LocalDateTime t) {
-    return getAll().filter(Event.hasBeenCreatedAtOrAfter(t));
+    return getAll().filter(new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event event) {
+        return Event.hasBeenCreatedAtOrAfter(t).call(event);
+      }
+    });
   }
 
   @Override
   public synchronized Option<Event> getById(final UUID id) {
-    return getAll().find(Event.hasId(id));
+    return getAll().find(new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event event) {
+        return Event.hasId(id).call(event);
+      }
+    });
   }
 
 }
