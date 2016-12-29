@@ -11,6 +11,9 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
     * functionaljava 4.6
     * rxjava 1.2.4
 
+#### Added
+* `AvroEventDataWriter` and `AvroEventDataReader` to use Apache Avro for `EventData` serialization/deserialization.
+
 ### 0.1.1
 
 * Aligned `MemoryEventStore` to the API change introduced in version 0.1.0.
