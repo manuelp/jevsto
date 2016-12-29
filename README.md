@@ -4,6 +4,13 @@ Java-based Event Store for implementing CQRS and Event Sourcing.
 
 ## Changelog
 
+### 0.2.0-SNAPSHOT (?)
+#### Changed
+* Upgraded dependencies:
+    * threetenbp 1.3.3
+    * functionaljava 4.6
+    * rxjava 1.2.4
+
 ### 0.1.1
 
 * Aligned `MemoryEventStore` to the API change introduced in version 0.1.0.
