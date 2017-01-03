@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0-SNAPSHOT (?)
+## 0.2.0 (2017-01-03)
 ### Changed
 * Upgraded dependencies:
     * threetenbp 1.3.3
