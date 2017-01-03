@@ -8,7 +8,11 @@
     * rxjava 1.2.4
 
 ### Added
+This release is all about [Apache Avro](https://avro.apache.org/) support for event data serialization/deserialization.
+
 * `AvroEventDataWriter` and `AvroEventDataReader` to use Apache Avro for `EventData` serialization/deserialization.
+* `AvroEvent` for easy configuration of Avro-based `EventDescriptor`s.
+* `AvroRead` with some utility methods for reading Avro schemas and data structures.
 
 ## 0.1.1
 * Aligned `MemoryEventStore` to the API change introduced in version 0.1.0.
