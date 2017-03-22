@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 (2017-03-22)
+### Changes
+Added `Stream` concept: `EventStore` is now an abstraction on a dynamic set of event streams, whereas before there was 
+conceptually only a single, global stream.
+
 ## 0.2.0 (2017-01-03)
 ### Changed
 * Upgraded dependencies:

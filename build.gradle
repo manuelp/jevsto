@@ -1,5 +1,5 @@
 group 'com.github.manuelp'
-version '0.2.0'
+version '0.3.0'
 
 apply plugin: 'java'
 apply plugin: 'maven'
