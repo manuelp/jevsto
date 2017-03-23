@@ -4,6 +4,7 @@ import static me.manuelp.jevsto.avro.AvroRead.readSchemaFromResource;
 
 import fj.F;
 import java.io.IOException;
+import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.EventDescriptor;
 import me.manuelp.jevsto.dataTypes.EventType;
 import org.apache.avro.Schema;
@@ -11,11 +12,11 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 
 public class AvroEvent {
-  public static <T> EventDescriptor<T> eventDescriptor(EventType eventType, String resource,
-      F<GenericRecord, F<T, GenericRecord>> serialize, F<GenericRecord, T> deserialize) {
+  public static <T> EventDescriptor<T> eventDescriptor(AggregateType aggregateType, EventType eventType,
+      String resource, F<GenericRecord, F<T, GenericRecord>> serialize, F<GenericRecord, T> deserialize) {
     AvroEventDataReader<T> reader = avroEventDataReader(resource, deserialize);
     AvroEventDataWriter<T> writer = avroEventDataWriter(resource, serialize);
-    return EventDescriptor.eventDescriptor(eventType, reader, writer);
+    return EventDescriptor.eventDescriptor(aggregateType, eventType, reader, writer);
   }
 
   public static <T> AvroEventDataReader<T> avroEventDataReader(String resource, F<GenericRecord, T> deserialize) {
