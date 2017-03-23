@@ -110,4 +110,18 @@ public class MemoryEventStoreTest {
 
     assertThat(events, is(list(e1)));
   }
+
+  @Test
+  public void can_provide_a_maximum_number_of_events() {
+    Event e1 = event(aggregateType("A"), aggregateID("x"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(aggregateType("B"), aggregateID("y"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    Event e3 = event(aggregateType("B"), aggregateID("y"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+    es.append(e3);
+
+    List<Event> events = es.fetch(eventStoreFilters().maxEvents(2));
+
+    assertThat(events, is(list(e1, e2)));
+  }
 }
