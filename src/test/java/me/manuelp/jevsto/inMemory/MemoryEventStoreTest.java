@@ -1,5 +1,6 @@
 package me.manuelp.jevsto.inMemory;
 
+import static fj.data.List.list;
 import static me.manuelp.jevsto.dataTypes.AggregateID.aggregateID;
 import static me.manuelp.jevsto.dataTypes.AggregateType.aggregateType;
 import static me.manuelp.jevsto.dataTypes.Event.event;
@@ -11,6 +12,8 @@ import static org.junit.Assert.assertThat;
 import fj.data.List;
 import fj.data.Option;
 import me.manuelp.jevsto.EventStore;
+import me.manuelp.jevsto.dataTypes.AggregateID;
+import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,8 +82,35 @@ public class MemoryEventStoreTest {
     es.append(e2);
     es.append(e3);
 
-    List<Event> events = es.getFrom(Option.some(LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC)));
+    List<Event> events = es.fetch(Option.some(LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC)),
+        Option.<AggregateType> none(), Option.<AggregateID> none());
 
-    assertThat(events, is(List.list(e2, e3)));
+    assertThat(events, is(list(e2, e3)));
+  }
+
+  @Test
+  public void can_provide_all_events_of_a_certain_aggregate_type() {
+    Event e1 = event(aggregateType("A"), aggregateID("x"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(aggregateType("B"), aggregateID("x"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+
+    List<Event> events = es
+        .fetch(Option.<Instant> none(), Option.some(aggregateType("B")), Option.<AggregateID> none());
+
+    assertThat(events, is(list(e2)));
+  }
+
+  @Test
+  public void can_provide_all_events_of_a_certain_aggregate_ID() {
+    Event e1 = event(aggregateType("A"), aggregateID("x"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(aggregateType("B"), aggregateID("y"), Instant.now(), eventType("test"), eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+
+    List<Event> events = es
+        .fetch(Option.<Instant> none(), Option.<AggregateType> none(), Option.some(aggregateID("x")));
+
+    assertThat(events, is(list(e1)));
   }
 }

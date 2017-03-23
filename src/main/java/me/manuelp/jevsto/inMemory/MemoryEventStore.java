@@ -8,6 +8,8 @@ import fj.data.Option;
 import java.util.ArrayList;
 import java.util.UUID;
 import me.manuelp.jevsto.EventStore;
+import me.manuelp.jevsto.dataTypes.AggregateID;
+import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.threeten.bp.Instant;
 import rx.Observable;
@@ -44,13 +46,37 @@ public class MemoryEventStore implements EventStore {
   }
 
   @Override
-  public synchronized List<Event> getFrom(final Option<Instant> from) {
-    return iterableList(store).filter(new F<Event, Boolean>() {
+  public synchronized List<Event> fetch(final Option<Instant> from, Option<AggregateType> aggregateType,
+      Option<AggregateID> aggregateID) {
+    return iterableList(store).filter(createdAtOrAfter(from)).filter(ofAggregateType(aggregateType))
+        .filter(ofAggregateID(aggregateID));
+  }
+
+  private F<Event, Boolean> createdAtOrAfter(final Option<Instant> from) {
+    return new F<Event, Boolean>() {
       @Override
       public Boolean f(Event e) {
         return from.isNone() || e.getTimestamp().equals(from.some()) || e.getTimestamp().isAfter(from.some());
       }
-    });
+    };
+  }
+
+  private F<Event, Boolean> ofAggregateType(final Option<AggregateType> type) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return type.isNone() || e.getAggregateType().equals(type.some());
+      }
+    };
+  }
+
+  private F<Event, Boolean> ofAggregateID(final Option<AggregateID> id) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return id.isNone() || e.getAggregateID().equals(id.some());
+      }
+    };
   }
 
   /*--------------------------------------------------------------------------
