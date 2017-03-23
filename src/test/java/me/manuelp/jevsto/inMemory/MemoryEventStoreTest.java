@@ -5,6 +5,7 @@ import static me.manuelp.jevsto.dataTypes.AggregateID.aggregateID;
 import static me.manuelp.jevsto.dataTypes.AggregateType.aggregateType;
 import static me.manuelp.jevsto.dataTypes.Event.event;
 import static me.manuelp.jevsto.dataTypes.EventData.eventData;
+import static me.manuelp.jevsto.dataTypes.EventStoreFilters.eventStoreFilters;
 import static me.manuelp.jevsto.dataTypes.EventType.eventType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -12,8 +13,6 @@ import static org.junit.Assert.assertThat;
 import fj.data.List;
 import fj.data.Option;
 import me.manuelp.jevsto.EventStore;
-import me.manuelp.jevsto.dataTypes.AggregateID;
-import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,8 +81,8 @@ public class MemoryEventStoreTest {
     es.append(e2);
     es.append(e3);
 
-    List<Event> events = es.fetch(Option.some(LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC)),
-        Option.<AggregateType> none(), Option.<AggregateID> none());
+    List<Event> events = es.fetch(eventStoreFilters().from(
+        LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC)));
 
     assertThat(events, is(list(e2, e3)));
   }
@@ -95,8 +94,7 @@ public class MemoryEventStoreTest {
     es.append(e1);
     es.append(e2);
 
-    List<Event> events = es
-        .fetch(Option.<Instant> none(), Option.some(aggregateType("B")), Option.<AggregateID> none());
+    List<Event> events = es.fetch(eventStoreFilters().ofAggregateType(aggregateType("B")));
 
     assertThat(events, is(list(e2)));
   }
@@ -108,8 +106,7 @@ public class MemoryEventStoreTest {
     es.append(e1);
     es.append(e2);
 
-    List<Event> events = es
-        .fetch(Option.<Instant> none(), Option.<AggregateType> none(), Option.some(aggregateID("x")));
+    List<Event> events = es.fetch(eventStoreFilters().ofAggregateID(aggregateID("x")));
 
     assertThat(events, is(list(e1)));
   }

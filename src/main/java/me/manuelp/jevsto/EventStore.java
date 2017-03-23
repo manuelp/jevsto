@@ -3,10 +3,9 @@ package me.manuelp.jevsto;
 import fj.data.List;
 import fj.data.Option;
 import java.util.UUID;
-import me.manuelp.jevsto.dataTypes.AggregateID;
 import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
-import org.threeten.bp.Instant;
+import me.manuelp.jevsto.dataTypes.EventStoreFilters;
 import rx.Observable;
 
 /**
@@ -22,7 +21,7 @@ public interface EventStore {
 
   Option<Event> getById(UUID id);
 
-  List<Event> fetch(Option<Instant> from, Option<AggregateType> aggregateType, Option<AggregateID> aggregateID);
+  List<Event> fetch(EventStoreFilters filters);
 
   /*--------------------------------------------------------------------------
    * Message broker methods

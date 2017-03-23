@@ -11,6 +11,7 @@ import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.AggregateID;
 import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
+import me.manuelp.jevsto.dataTypes.EventStoreFilters;
 import org.threeten.bp.Instant;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -46,10 +47,9 @@ public class MemoryEventStore implements EventStore {
   }
 
   @Override
-  public synchronized List<Event> fetch(final Option<Instant> from, Option<AggregateType> aggregateType,
-      Option<AggregateID> aggregateID) {
-    return iterableList(store).filter(createdAtOrAfter(from)).filter(ofAggregateType(aggregateType))
-        .filter(ofAggregateID(aggregateID));
+  public synchronized List<Event> fetch(EventStoreFilters filters) {
+    return iterableList(store).filter(createdAtOrAfter(filters.getFrom()))
+        .filter(ofAggregateType(filters.getAggregateType())).filter(ofAggregateID(filters.getAggregateID()));
   }
 
   private F<Event, Boolean> createdAtOrAfter(final Option<Instant> from) {
