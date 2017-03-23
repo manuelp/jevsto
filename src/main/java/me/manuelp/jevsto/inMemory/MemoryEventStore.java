@@ -1,100 +1,64 @@
 package me.manuelp.jevsto.inMemory;
 
-import static fj.data.List.list;
+import static fj.data.List.iterableList;
 
 import fj.F;
-import fj.data.HashMap;
 import fj.data.List;
 import fj.data.Option;
+import java.util.ArrayList;
 import java.util.UUID;
 import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.Event;
-import me.manuelp.jevsto.dataTypes.Stream;
-import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.Instant;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 
 public class MemoryEventStore implements EventStore {
-  private final HashMap<Stream, List<Event>> container;
-  private final HashMap<Stream, SerializedSubject<Event, Event>> streams;
+  private final ArrayList<Event> store;
+  private final SerializedSubject<Event, Event> stream;
 
   public MemoryEventStore() {
-    container = HashMap.arrayHashMap();
-    streams = HashMap.arrayHashMap();
+    store = new ArrayList<>();
+    stream = new SerializedSubject<>(PublishSubject.<Event> create());
   }
 
-  private SerializedSubject<Event, Event> createStream() {
-    return new SerializedSubject<>(PublishSubject.<Event>create());
-  }
+  /*--------------------------------------------------------------------------
+   * DB methods
+   *--------------------------------------------------------------------------*/
 
   @Override
-  public List<Stream> getStreams() {
-    return container.keys();
-  }
-
-  private List<Event> getList(Stream stream) {
-    return container.get(stream).orSome(List.<Event>list());
-  }
-
-  private SerializedSubject<Event, Event> getStream(Stream stream) {
-    SerializedSubject<Event, Event> s = streams.get(stream).orSome(createStream());
-    streams.set(stream, s);
-    return s;
-  }
-
-  @Override
-  public void append(Stream stream, Event e) {
-    List<Event> events = getList(stream);
-    container.set(stream, events.append(list(e)));
-
-    getStream(stream).onNext(e);
-  }
-
-  @Override
-  public List<Event> getAll(Stream stream) {
-    return getList(stream);
-  }
-
-  @Override
-  public List<Event> getFrom(Stream stream, final LocalDateTime t) {
-    return getAll(stream).filter(new F<Event, Boolean>() {
-      @Override
-      public Boolean f(Event event) {
-        return Event.hasBeenCreatedAtOrAfter(t).call(event);
-      }
-    });
+  public synchronized void append(final Event e) {
+    store.add(e);
+    stream.onNext(e);
   }
 
   @Override
   public synchronized Option<Event> getById(final UUID id) {
-    List<Event> all = List.join(getStreams().map(new F<Stream, List<Event>>() {
+    return iterableList(store).find(new F<Event, Boolean>() {
       @Override
-      public List<Event> f(Stream s) {
-        return getList(s);
-      }
-    }));
-    return all.find(new F<Event, Boolean>() {
-      @Override
-      public Boolean f(Event event) {
-        return Event.hasId(id).call(event);
+      public Boolean f(Event e) {
+        return e.getId().equals(id);
       }
     });
   }
 
   @Override
-  public Observable<Event> getEvents(Stream stream) {
-    return getStream(stream);
+  public synchronized List<Event> getFrom(final Option<Instant> from) {
+    return iterableList(store).filter(new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return from.isNone() || e.getTimestamp().equals(from.some()) || e.getTimestamp().isAfter(from.some());
+      }
+    });
   }
+
+  /*--------------------------------------------------------------------------
+   * Message broker methods
+   *--------------------------------------------------------------------------*/
 
   @Override
-  public Observable<Event> getAllEvents(Stream stream) {
-    return Observable.from(getList(stream)).concatWith(getStream(stream));
+  public Observable<Event> stream() {
+    return stream;
   }
-
-  @Override
-  public Observable<Event> getAllEventsFrom(Stream stream, LocalDateTime from) {
-    return getAllEvents(stream).filter(Event.hasBeenCreatedFrom(from));
-  }
-
 }

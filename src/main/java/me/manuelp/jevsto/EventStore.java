@@ -3,30 +3,29 @@ package me.manuelp.jevsto;
 import fj.data.List;
 import fj.data.Option;
 import java.util.UUID;
+import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
-import me.manuelp.jevsto.dataTypes.Stream;
-import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.Instant;
 import rx.Observable;
 
 /**
- * Conceptually, this abstraction represents a dynamic set of {@link Event} streams.
- * Every stream has a unique {@link Stream identifier} used as key, and can be queried at a specific point in time or
- * subscribed to (thanks to RxJava).
+ * Conceptually, this abstraction represents a dynamic set of {@link Event} streams. Every stream refers to a specific
+ * {@link AggregateType}, and every events refers to a specific {@link me.manuelp.jevsto.dataTypes.AggregateID}. It can
+ * be queried at a specific point in time or subscribed to (thanks to RxJava).
  */
 public interface EventStore {
-  void append(Stream stream, Event e);
-
-  List<Stream> getStreams();
+  /*--------------------------------------------------------------------------
+   * DB methods
+   *--------------------------------------------------------------------------*/
+  void append(Event e);
 
   Option<Event> getById(UUID id);
 
-  Observable<Event> getEvents(Stream stream);
+  List<Event> getFrom(Option<Instant> from);
 
-  Observable<Event> getAllEvents(Stream stream);
+  /*--------------------------------------------------------------------------
+   * Message broker methods
+   *--------------------------------------------------------------------------*/
 
-  Observable<Event> getAllEventsFrom(Stream stream, LocalDateTime from);
-
-  List<Event> getAll(Stream stream);
-
-  List<Event> getFrom(Stream stream, LocalDateTime t);
+  Observable<Event> stream();
 }

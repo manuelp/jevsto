@@ -1,38 +1,64 @@
 package me.manuelp.jevsto.dataTypes;
 
-import me.manuelp.jevsto.NotNull;
-import org.threeten.bp.LocalDateTime;
-import rx.functions.Func1;
-
+import fj.F;
+import fj.Ord;
+import java.util.Objects;
 import java.util.UUID;
+import me.manuelp.jevsto.NotNull;
+import org.threeten.bp.Instant;
+import rx.functions.Func1;
 
 public class Event {
   private final UUID id;
-  private final LocalDateTime timestamp;
+  private final Instant timestamp;
   private final EventType type;
+  private final AggregateType aggregateType;
+  private final AggregateID aggregateID;
   private final EventData data;
 
-  private Event(UUID id, LocalDateTime timestamp, EventType type, EventData data) {
-    NotNull.check(id, timestamp, type, data);
+  private Event(UUID id, AggregateType aggregateType, AggregateID aggregateID, Instant timestamp, EventType type,
+    EventData data) {
+    NotNull.check(id, aggregateType, aggregateID, timestamp, type, data);
     this.id = id;
+    this.aggregateType = aggregateType;
+    this.aggregateID = aggregateID;
     this.timestamp = timestamp;
     this.type = type;
     this.data = data;
   }
 
-  public static Event event(LocalDateTime timestamp, EventType type, EventData data) {
-    return new Event(UUID.randomUUID(), timestamp, type, data);
+  public static Event event(AggregateType aggregateType, AggregateID aggregateID, Instant timestamp, EventType type,
+      EventData data) {
+    return new Event(UUID.randomUUID(), aggregateType, aggregateID, timestamp, type, data);
   }
 
-  public static Event event(UUID id, LocalDateTime timestamp, EventType type, EventData data) {
-    return new Event(id, timestamp, type, data);
+  public static Event event(UUID id, AggregateType aggregateType, AggregateID aggregateID, Instant timestamp,
+      EventType type, EventData data) {
+    return new Event(id, aggregateType, aggregateID, timestamp, type, data);
+  }
+
+  public static Ord<Event> byTimestamp() {
+    return Ord.longOrd.contramap(new F<Event, Long>() {
+      @Override
+      public Long f(Event e) {
+        return e.getTimestamp().getEpochSecond();
+      }
+    });
   }
 
   public UUID getId() {
     return id;
   }
 
-  public LocalDateTime getTimestamp() {
+  public AggregateType getAggregateType() {
+    return aggregateType;
+  }
+
+  public AggregateID getAggregateID() {
+    return aggregateID;
+  }
+
+  public Instant getTimestamp() {
     return timestamp;
   }
 
@@ -42,33 +68,6 @@ public class Event {
 
   public EventData getData() {
     return data;
-  }
-
-  public static Func1<Event, Boolean> hasBeenCreatedAtOrAfter(final LocalDateTime t) {
-    return new Func1<Event, Boolean>() {
-      @Override
-      public Boolean call(Event e) {
-        return e.getTimestamp().isEqual(t) || e.getTimestamp().isAfter(t);
-      }
-    };
-  }
-
-  public static Func1<Event, Boolean> hasBeenCreatedFrom(final LocalDateTime t) {
-    return new Func1<Event, Boolean>() {
-      @Override
-      public Boolean call(Event event) {
-        return hasBeenCreatedAtOrAfter(t).call(event);
-      }
-    };
-  }
-
-  public static Func1<Event, Boolean> hasId(final UUID id) {
-    return new Func1<Event, Boolean>() {
-      @Override
-      public Boolean call(Event event) {
-        return id.equals(event.getId());
-      }
-    };
   }
 
   /**
@@ -88,34 +87,25 @@ public class Event {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     Event event = (Event) o;
-
-    if (!id.equals(event.id)) return false;
-    if (!timestamp.equals(event.timestamp)) return false;
-    if (!type.equals(event.type)) return false;
-    return data.equals(event.data);
-
+    return Objects.equals(getId(), event.getId()) && Objects.equals(getAggregateType(), event.getAggregateType())
+        && Objects.equals(getAggregateID(), event.getAggregateID())
+        && Objects.equals(getTimestamp(), event.getTimestamp()) && Objects.equals(getType(), event.getType())
+        && Objects.equals(getData(), event.getData());
   }
 
   @Override
   public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + timestamp.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + data.hashCode();
-    return result;
+    return Objects.hash(getId(), getAggregateType(), getAggregateID(), getTimestamp(), getType(), getData());
   }
 
   @Override
   public String toString() {
-    return "Event{" +
-           "id=" + id +
-           ", timestamp=" + timestamp +
-           ", type=" + type +
-           ", data=" + data +
-           '}';
+    return "Event{" + "id=" + id + ", timestamp=" + timestamp + ", type=" + type + ", aggregateType=" + aggregateType
+        + ", aggregateID=" + aggregateID + ", data=" + data + '}';
   }
 }
