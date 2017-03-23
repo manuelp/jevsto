@@ -48,9 +48,10 @@ public class MemoryEventStore implements EventStore {
 
   @Override
   public synchronized List<Event> fetch(EventStoreFilters filters) {
-    List<Event> es = iterableList(store).filter(createdAtOrAfter(filters.getFrom()))
+    List<Event> filtered = iterableList(store).filter(createdAtOrAfter(filters.getFrom()))
         .filter(ofAggregateType(filters.getAggregateType())).filter(ofAggregateID(filters.getAggregateID()));
-    return filters.getMaxEvents().isSome() ? es.take(filters.getMaxEvents().some()) : es;
+    List<Event> batch = filters.getMaxEvents().isSome() ? filtered.take(filters.getMaxEvents().some()) : filtered;
+    return batch.sort(Event.byTimestamp());
   }
 
   private F<Event, Boolean> createdAtOrAfter(final Option<Instant> from) {

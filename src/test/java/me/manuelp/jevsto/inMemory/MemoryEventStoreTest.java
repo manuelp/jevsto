@@ -67,6 +67,26 @@ public class MemoryEventStoreTest {
   }
 
   @Test
+  public void can_provide_all_events_sorted_by_timestamp() {
+    Event e1 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-23T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    Event e2 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-22T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    Event e3 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+    es.append(e3);
+
+    List<Event> events = es.fetch(eventStoreFilters());
+
+    assertThat(events, is(list(e3, e2, e1)));
+  }
+
+  @Test
   public void can_provide_all_events_from_a_certain_point_in_time() {
     Event e1 = event(aggregateType("_"), aggregateID("x"),
         LocalDateTime.parse("2017-03-20T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
