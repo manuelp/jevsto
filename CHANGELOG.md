@@ -1,8 +1,27 @@
 # Changelog
 
-## 0.4.0 (?)
-### Changes
-...
+## 0.4.0 (2017-03-24)
+Redesigned the `EventStore` interface. The event store is basically an intersection between:
+
+* A data store (existing events fetching).
+* A message broker (events notification to arbitrary listeners).
+
+The API has been simplified to explicitly reflect those two modes, by explosing basically just three operations:
+
+* (Store) Fetch event by ID.
+* (Store) Fetch events according some criteria. Available query criteria has been modeled with the `EventStoreFilters` 
+  value object (which exposes a fluent-style interface for construction).
+* (Message broker) Get the `Observable` stream to subscribe to.
+
+The features implemented by removed methods can easily be obtained combining those operations.
+
+Now `Event`s explicitly include data about the *[aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html)* 
+they refer to:
+
+- `AggregateType`
+- `AggregateID`
+
+This way jevsto API is now more explicitly geared toward DDD. 
 
 ## 0.3.0 (2017-03-22)
 ### Changes
