@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.1-SNAPSHOT (?)
+## 0.5.0-SNAPSHOT (?)
 * Events can be fetched with the seek method using not only the timestamp but also the event ID.
     * Added `Seek` type and used in `EventStoreFilters`.
 
