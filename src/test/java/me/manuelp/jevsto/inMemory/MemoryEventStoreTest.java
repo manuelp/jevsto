@@ -7,6 +7,7 @@ import static me.manuelp.jevsto.dataTypes.Event.event;
 import static me.manuelp.jevsto.dataTypes.EventData.eventData;
 import static me.manuelp.jevsto.dataTypes.EventStoreFilters.eventStoreFilters;
 import static me.manuelp.jevsto.dataTypes.EventType.eventType;
+import static me.manuelp.jevsto.dataTypes.Seek.seek;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -102,7 +103,27 @@ public class MemoryEventStoreTest {
     es.append(e3);
 
     List<Event> events = es.fetch(eventStoreFilters().from(
-        LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC)));
+        seek(LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC))));
+
+    assertThat(events, is(list(e2, e3)));
+  }
+
+  @Test
+  public void can_provide_all_events_from_a_certain_ID_onwards() {
+    Event e1 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-20T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    Event e2 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-21T15:00:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    Event e3 = event(aggregateType("_"), aggregateID("x"),
+        LocalDateTime.parse("2017-03-21T16:30:00").toInstant(ZoneOffset.UTC), eventType("test"),
+        eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+    es.append(e3);
+
+    List<Event> events = es.fetch(eventStoreFilters().from(seek(e2.getId())));
 
     assertThat(events, is(list(e2, e3)));
   }

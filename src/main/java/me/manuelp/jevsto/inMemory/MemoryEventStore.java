@@ -12,6 +12,7 @@ import me.manuelp.jevsto.dataTypes.AggregateID;
 import me.manuelp.jevsto.dataTypes.AggregateType;
 import me.manuelp.jevsto.dataTypes.Event;
 import me.manuelp.jevsto.dataTypes.EventStoreFilters;
+import me.manuelp.jevsto.dataTypes.Seek;
 import org.threeten.bp.Instant;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -48,7 +49,8 @@ public class MemoryEventStore implements EventStore {
 
   @Override
   public synchronized List<Event> fetch(EventStoreFilters filters) {
-    List<Event> filtered = iterableList(store).filter(createdAtOrAfter(filters.getFrom()))
+    List<Event> filtered = iterableList(store).filter(createdAtOrAfter(filters.getSeek().bind(Seek.getTimestampF())))
+        .dropWhile(isNotLastSeenEvent(filters.getSeek().bind(Seek.getEventIDF())))
         .filter(ofAggregateType(filters.getAggregateType())).filter(ofAggregateID(filters.getAggregateID()));
     List<Event> batch = filters.getMaxEvents().isSome() ? filtered.take(filters.getMaxEvents().some()) : filtered;
     return batch.sort(Event.byTimestamp());
@@ -59,6 +61,15 @@ public class MemoryEventStore implements EventStore {
       @Override
       public Boolean f(Event e) {
         return from.isNone() || e.getTimestamp().equals(from.some()) || e.getTimestamp().isAfter(from.some());
+      }
+    };
+  }
+
+  private F<Event, Boolean> isNotLastSeenEvent(final Option<UUID> e) {
+    return new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event event) {
+        return !e.isNone() && !e.some().equals(event.getId());
       }
     };
   }
