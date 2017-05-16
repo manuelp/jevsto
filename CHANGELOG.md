@@ -4,6 +4,9 @@
 * Events can be fetched with the seek method using not only the timestamp but also the event ID.
     * Added `Seek` type and used in `EventStoreFilters`.
 
+* Upgraded Gradle wrapper to version 3.5
+* Moved project to `java-library` plugin from `java` one.
+
 ## 0.4.0 (2017-03-24)
 Redesigned the `EventStore` interface. The event store is basically an intersection between:
 
