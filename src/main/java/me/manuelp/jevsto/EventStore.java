@@ -2,11 +2,10 @@ package me.manuelp.jevsto;
 
 import fj.data.List;
 import fj.data.Option;
+import java.util.UUID;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.threeten.bp.LocalDateTime;
 import rx.Observable;
-
-import java.util.UUID;
 
 public interface EventStore {
   void append(Event e);
@@ -20,6 +19,10 @@ public interface EventStore {
   List<Event> getAll();
 
   List<Event> getFrom(LocalDateTime t);
+
+  List<Event> getFrom(LocalDateTime t, int max);
+
+  List<Event> getFrom(UUID id, int max);
 
   Option<Event> getById(UUID id);
 }

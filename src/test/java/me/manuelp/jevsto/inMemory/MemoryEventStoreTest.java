@@ -1,18 +1,17 @@
 package me.manuelp.jevsto.inMemory;
 
-import fj.data.List;
-import me.manuelp.jevsto.EventStore;
-import me.manuelp.jevsto.dataTypes.Event;
-import me.manuelp.jevsto.dataTypes.EventType;
-import org.junit.Test;
-import org.threeten.bp.LocalDateTime;
-import rx.observers.TestObserver;
-
 import static me.manuelp.jevsto.dataTypes.Event.event;
 import static me.manuelp.jevsto.dataTypes.EventData.eventData;
 import static me.manuelp.jevsto.dataTypes.EventType.eventType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import fj.data.List;
+import me.manuelp.jevsto.EventStore;
+import me.manuelp.jevsto.dataTypes.Event;
+import org.junit.Test;
+import org.threeten.bp.LocalDateTime;
+import rx.observers.TestObserver;
 
 public class MemoryEventStoreTest {
 
@@ -25,7 +24,7 @@ public class MemoryEventStoreTest {
     es.getEvents().subscribe(projection1);
     es.getEvents().subscribe(projection2);
     es.getEvents().subscribe(projection3);
-    Event e = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
+    Event e = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
 
     es.append(e);
 
@@ -37,8 +36,8 @@ public class MemoryEventStoreTest {
   @Test
   public void can_provide_all_events_received_so_far() {
     EventStore es = new MemoryEventStore();
-    Event e1 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
-    Event e2 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
+    Event e1 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
 
     es.append(e1);
     es.append(e2);
@@ -52,8 +51,8 @@ public class MemoryEventStoreTest {
   @Test
   public void can_provide_all_events_from_a_certain_instant() {
     EventStore es = new MemoryEventStore();
-    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[]{}));
-    Event e2 = event(LocalDateTime.of(2015, 7, 23, 22, 52), eventType("test"), eventData(new byte[]{}));
+    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.of(2015, 7, 23, 22, 52), eventType("test"), eventData(new byte[] {}));
 
     es.append(e1);
     es.append(e2);
@@ -64,11 +63,47 @@ public class MemoryEventStoreTest {
   }
 
   @Test
+  public void can_seek_provide_a_number_of_events_from_a_certain_instant() {
+    EventStore es = new MemoryEventStore();
+    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.of(2015, 7, 23, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e3 = event(LocalDateTime.of(2015, 7, 24, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e4 = event(LocalDateTime.of(2015, 7, 25, 22, 52), eventType("test"), eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+    es.append(e3);
+    es.append(e4);
+
+    List<Event> events = es.getFrom(LocalDateTime.of(2015, 7, 23, 0, 0), 2);
+    assertEquals(2, events.length());
+    assertTrue(events.toJavaList().contains(e2));
+    assertTrue(events.toJavaList().contains(e3));
+  }
+
+  @Test
+  public void can_seek_provide_a_number_of_events_from_a_certain_one() {
+    EventStore es = new MemoryEventStore();
+    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.of(2015, 7, 23, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e3 = event(LocalDateTime.of(2015, 7, 24, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e4 = event(LocalDateTime.of(2015, 7, 25, 22, 52), eventType("test"), eventData(new byte[] {}));
+    es.append(e1);
+    es.append(e2);
+    es.append(e3);
+    es.append(e4);
+
+    List<Event> events = es.getFrom(e2.getId(), 2);
+    assertEquals(2, events.length());
+    assertTrue(events.toJavaList().contains(e2));
+    assertTrue(events.toJavaList().contains(e3));
+  }
+
+  @Test
   public void can_subscribe_to_a_stream_of_all_events() {
     EventStore es = new MemoryEventStore();
-    Event e1 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
-    Event e2 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
-    Event e3 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[]{}));
+    Event e1 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
+    Event e3 = event(LocalDateTime.now(), eventType("test"), eventData(new byte[] {}));
     es.append(e1);
     es.append(e2);
     TestObserver<Event> projection1 = new TestObserver<>();
@@ -82,9 +117,9 @@ public class MemoryEventStoreTest {
   @Test
   public void can_subscribe_to_a_stream_of_all_events_from_a_certain_date() {
     EventStore es = new MemoryEventStore();
-    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[]{}));
-    Event e2 = event(LocalDateTime.of(2015, 7, 27, 22, 52), eventType("test"), eventData(new byte[]{}));
-    Event e3 = event(LocalDateTime.of(2015, 7, 27, 22, 52), eventType("test"), eventData(new byte[]{}));
+    Event e1 = event(LocalDateTime.of(2015, 7, 21, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e2 = event(LocalDateTime.of(2015, 7, 27, 22, 52), eventType("test"), eventData(new byte[] {}));
+    Event e3 = event(LocalDateTime.of(2015, 7, 27, 22, 52), eventType("test"), eventData(new byte[] {}));
     es.append(e1);
     es.append(e2);
     TestObserver<Event> projection1 = new TestObserver<>();

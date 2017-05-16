@@ -3,16 +3,14 @@ package me.manuelp.jevsto.inMemory;
 import fj.F;
 import fj.data.List;
 import fj.data.Option;
+import java.util.ArrayList;
+import java.util.UUID;
 import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.Event;
 import org.threeten.bp.LocalDateTime;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class MemoryEventStore implements EventStore {
   private final ArrayList<Event> queue;
@@ -20,7 +18,7 @@ public class MemoryEventStore implements EventStore {
 
   public MemoryEventStore() {
     queue = new ArrayList<>();
-    stream = new SerializedSubject<>(PublishSubject.<Event>create());
+    stream = new SerializedSubject<>(PublishSubject.<Event> create());
   }
 
   @Override
@@ -57,6 +55,21 @@ public class MemoryEventStore implements EventStore {
         return Event.hasBeenCreatedAtOrAfter(t).call(event);
       }
     });
+  }
+
+  @Override
+  public List<Event> getFrom(LocalDateTime t, int max) {
+    return getFrom(t).take(max);
+  }
+
+  @Override
+  public List<Event> getFrom(final UUID id, int max) {
+    return getAll().dropWhile(new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event e) {
+        return !e.getId().equals(id);
+      }
+    }).take(max);
   }
 
   @Override
