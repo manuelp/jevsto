@@ -1,10 +1,9 @@
 # Changelog
 
-## 0.2.1 (?)
-This version is a functional backport of some features already implemented in newer jevsto versions, but that have 
-a redesigned interface.
+## 0.2.1 (2017-05-17)
+This release contains the backport of some features already implemented in newer jevsto versions (0.4.0), which have a redesigned API. It's not a branch that will be merged with the main development line, since it's just to support some required use-cases without requiring a full-blown upgrade.
 
-* Added new query methods to `EventStore`, to enable seeked fetching
+* Added new query methods to `EventStore`, to enable seeked fetching.
     * `getFrom(t :: LocalDateTime, max :: int) :: List<Event>`
     * `getFrom(id :: UUID, max :: int) :: List<Event>`
 
