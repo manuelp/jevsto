@@ -1,12 +1,15 @@
 package me.manuelp.jevsto.inMemory;
 
 import fj.F;
+import fj.data.Either;
 import fj.data.List;
 import fj.data.Option;
 import java.util.ArrayList;
 import java.util.UUID;
 import me.manuelp.jevsto.EventStore;
 import me.manuelp.jevsto.dataTypes.Event;
+import me.manuelp.jevsto.dataTypes.EventType;
+import me.manuelp.jevsto.dataTypes.Seek;
 import org.threeten.bp.LocalDateTime;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -58,18 +61,29 @@ public class MemoryEventStore implements EventStore {
   }
 
   @Override
-  public List<Event> getFrom(LocalDateTime t, int max) {
-    return getFrom(t).take(max);
-  }
+  public List<Event> fetch(Seek s, final Option<EventType> type) {
 
-  @Override
-  public List<Event> getFrom(final UUID id, int max) {
-    return getAll().dropWhile(new F<Event, Boolean>() {
+    return s.getOffset().map(Either.either_(new F<LocalDateTime, List<Event>>() {
       @Override
-      public Boolean f(Event e) {
-        return !e.getId().equals(id);
+      public List<Event> f(LocalDateTime t) {
+        return getFrom(t);
       }
-    }).take(max);
+    }, new F<UUID, List<Event>>() {
+      @Override
+      public List<Event> f(final UUID id) {
+        return getAll().dropWhile(new F<Event, Boolean>() {
+          @Override
+          public Boolean f(Event e) {
+            return !e.getId().equals(id);
+          }
+        });
+      }
+    })).orSome(getAll()).filter(new F<Event, Boolean>() {
+      @Override
+      public Boolean f(Event event) {
+        return type.isNone() || event.getType().equals(type.some());
+      }
+    }).take(s.getMax());
   }
 
   @Override

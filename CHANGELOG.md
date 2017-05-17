@@ -1,7 +1,26 @@
 # Changelog
 
+## 0.2.2-SNAPSHOT (2017-05-17)
+Changed `EventStore` interface to enable seeked fetching:
+
+* With optional offset (but mandatory limit).
+* With optional `EventType` filter.
+
+The two methods added in the previous version have been replaced by a single method:
+
+    getFrom(s :: Seek, type :: Option<EventType>) :: List<Event>
+
+The seek invariants are ensured by the new value object `Seek` that encapsulates the various valid seeking parameters 
+combinations (each one of them exposed with a dedicated static factory method):
+
+* No offset, just limit
+* Timestamp offset + limit
+* Event ID offset + limit
+
 ## 0.2.1 (2017-05-17)
-This release contains the backport of some features already implemented in newer jevsto versions (0.4.0), which have a redesigned API. It's not a branch that will be merged with the main development line, since it's just to support some required use-cases without requiring a full-blown upgrade.
+This release contains the backport of some features already implemented in newer jevsto versions (0.4.0), which have a 
+redesigned API. It's not a branch that will be merged with the main development line, since it's just to support some 
+required use-cases without requiring a full-blown upgrade.
 
 * Added new query methods to `EventStore`, to enable seeked fetching.
     * `getFrom(t :: LocalDateTime, max :: int) :: List<Event>`

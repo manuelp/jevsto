@@ -4,6 +4,8 @@ import fj.data.List;
 import fj.data.Option;
 import java.util.UUID;
 import me.manuelp.jevsto.dataTypes.Event;
+import me.manuelp.jevsto.dataTypes.EventType;
+import me.manuelp.jevsto.dataTypes.Seek;
 import org.threeten.bp.LocalDateTime;
 import rx.Observable;
 
@@ -20,9 +22,7 @@ public interface EventStore {
 
   List<Event> getFrom(LocalDateTime t);
 
-  List<Event> getFrom(LocalDateTime t, int max);
-
-  List<Event> getFrom(UUID id, int max);
+  List<Event> fetch(Seek s, Option<EventType> type);
 
   Option<Event> getById(UUID id);
 }
