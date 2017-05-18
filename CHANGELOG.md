@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.2-SNAPSHOT (2017-05-17)
+## 0.2.2 (2017-05-17)
 Changed `EventStore` interface to enable seeked fetching:
 
 * With optional offset (but mandatory limit).
